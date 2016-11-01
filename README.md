@@ -1,8 +1,7 @@
 # SIO-R-Users
 Collaborative Resources for the UCSD/SIO R Users Group
 
-Link to configuring RStudio with Github:
-[https://www.r-bloggers.com/rstudio-and-github/]
+[Blog Post] (https://www.r-bloggers.com/rstudio-and-github/) on Configuring RStudio with Github 
 
 == Address Book ==
 Hao was here.
