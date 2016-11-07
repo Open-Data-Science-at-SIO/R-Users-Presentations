@@ -3,72 +3,44 @@ Github Intro
 Hao Ye
 November 8, 2016
 
-What is git? What is Github?
-----------------------------
-
-Git is a version control system, "a tool that keeps track of these changes for us and helps us version and merge our files." <http://swcarpentry.github.io/git-novice/01-basics/>
-
-"GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere." <https://guides.github.com/activities/hello-world/>
-
-"The **sweet spot for this kind of training is therefore the first years of graduate school**. At that point, students have *time to learn* (at least, more time than they’ll have once they’re faculty) and *real problems of their own* that they want to solve." [Wilson 2016](https://f1000research.com/articles/3-62/v2)
-
-### Example Github repositories
-
--   Brian's repositories: <https://github.com/brianstock>
--   SIO-BUGS repository: <https://github.com/SIO-BUG/BUG-Resources>.
--   SIO-R-Users repository: <https://github.com/ha0ye/SIO-R-Users>.
-
-### Unlimited private repos for students
-
-While a student you can request a ["developer pack"](https://education.github.com/pack) that gives you unlimited private repositories for chapters/papers in progress.
-
-Let's get started
+Where do I begin?
 -----------------
 
-1.  Create Github account
-2.  Clone/download SIO-R-Users repository
+For a basic review of Git (the version control system) and Github (the code-hosting platform), take a look at Brian Stock's notes from last week ("2016\_11\_01\_github\_intro").
 
-``` r
-git status
-git pull origin master
-git status
-```
+Basic Github Collaboration (shared repository model)
+----------------------------------------------------
 
-1.  Create new folder and file
-2.  Commit changes
+1.  You want to start with an up-to-date local copy of the shared repository. If you don't currently have a local copy, you can create one using the `git clone` command. Otherwise, just pull the most recent changes.
 
-``` r
-git add -A
-git commit -m “message”
-git status
-```
+2.  Make a new branch for your changes. This allows you to make changes and commit them without worrying that you'll be causing a conflict with someone else's commits. Please choose a descriptive name for the new branch (maybe even including your username).
 
-1.  Push to Github
+\[Note that we are running these commands in the shell.\]
 
-``` r
-git push origin master
-```
+        $ git checkout -b hye_github_collab
 
-1.  Check online, see changes
+1.  This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
 
-Future workflow: adding a presentation to R-Users Github
---------------------------------------------------------
+2.  Once your changes are committed, you can go back to the `master` branch using the RStudio interface or the shell command.
 
-``` r
-...cd to SIO-R-Users folder...
-git pull origin master
-...make local changes...
-git add -A
-git commit -m “message”
-git push origin master
-```
+<!-- -->
 
-Existing resources
-------------------
+        $ git checkout master
 
-In case this totally flops or we can't figure out your machine, [Software Carpentry](http://software-carpentry.org/lessons/) has a great set of tutorials for git/Github (as well as R and other things computing):
+1.  Then make sure to pull the latest version of the `master` branch before attempting to merge your new changes.
 
--   [Git intro (3 hour workshop)](http://swcarpentry.github.io/git-novice/reference/)
--   [Recorded git intro workshop](https://www.youtube.com/watch?v=hKFNPxxkbO0)
+2.  Now try to merge your changes. (The `--no-ff` option is to make sure all our individual branch commits are not collapsed into a single commit on the `master` branch.)
 
-Github also has nice tutorials for getting started: <https://guides.github.com/>.
+<!-- -->
+
+        $ git merge --no-ff hye_github_collab
+
+1.  Resolve any conflicts (probably none if you're only adding new files), and go back to 6. to try merging again.
+
+2.  Now push the changes back to Github.
+
+3.  Delete your local copy of the new branch, since its work is now done!
+
+<!-- -->
+
+        $ git branch -d hye_github_collab
