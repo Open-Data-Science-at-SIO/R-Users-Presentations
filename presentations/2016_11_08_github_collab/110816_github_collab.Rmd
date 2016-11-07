@@ -1,0 +1,30 @@
+---
+title: "Github Intro"
+author: "Hao Ye"
+date: "November 8, 2016"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Where do I begin?
+
+For a basic review of Git (the version control system) and Github (the code-hosting platform), take a look at Brian Stock's notes from last week ("2016_11_01_github_intro").
+
+## Basic Github Collaboration (shared repository model)
+
+1. You want to start with an up-to-date local copy of the shared repository. If you don't currently have a local copy, you can create one using the "git clone" command. Otherwise, just pull the most recent changes.
+
+2. Make a new branch for your changes. This allows you to make changes and commit them without worrying that you'll be causing a conflict with someone else's commits. Please choose a descriptive name for the new branch (maybe even including your username). 
+
+[Note that we are running these commands in the shell.]
+
+    $ git checkout -b hye_github_collab
+
+3. This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
+
+
+
+
