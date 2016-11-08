@@ -8,4 +8,4 @@ Collaborative Resources for the UCSD/SIO R Users Group
 * Hao was here.
 * Eiren was here. Again. Testing push.
 * Raffie was here.
-* Making changes...
+* Raffie changes
