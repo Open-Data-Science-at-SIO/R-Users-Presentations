@@ -2,7 +2,9 @@
 title: "Github Intro"
 author: "Hao Ye"
 date: "November 8, 2016"
-output: github_document
+output:
+  github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -35,43 +37,31 @@ In the second workflow (fork and pull model), we don't have the ability to push 
 
 3. This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
 
-4. Once all your changes are committed, you will want to make sure that you can merge these changes with the `master` branch. We do this by going back to the `master` branch using the RStudio interface or the shell command.
+4. Once all your changes are committed, you will want to make sure that you can merge these changes with the `master` branch from the original repository. We do this by fetching the updates in the shell.
 
     ```
-    $ git checkout master
+    $ git fetch origin
     ```
-
-5. Then make sure to pull the latest version of the `master` branch before attempting to merge your new changes.
-
-    ```
-    $ git pull
-    ```
-
-6. Now we want to make sure that our changes won't cause a conflict. We go back to our new branch from within RStudio or by using the shell command.
+    
+5. Next, we try to merge our changes. (I think this can only be done from the shell.)
 
     ```
-    $ git checkout hye_github_collab
+    $ git merge origin/master
     ```
 
-7. Next, we try to merge our changes. (I think this can only be done from the shell.)
+6. Resolve any conflicts (probably none if you're only adding new files), and commit the latest version of our new branch.
 
-    ```
-    $ git merge master
-    ```
-
-8. Resolve any conflicts (probably none if you're only adding new files), and commit the latest version of our new branch.
-
-9. Now we want to push the changes back to Github. Because our new branch isn't yet on Github, we'll need to go into the shell once again to do this.
+7. Now we want to push the changes back to Github. Because our new branch isn't yet on Github, we'll need to go into the shell once again to do this.
 
     ```
     $ git push --set-upstream origin hye_github_collab
     ```
 
-10. On Github, issue a "pull request" to merge your changes into the `master` branch.
+8. On Github, issue a "pull request" to merge your changes into the `master` branch.
 
-11. After this is done, you should also have the option of deleting the new branch on Github. If you don't need it anymore, go ahead and delete!
+9. After this is done, you will want to synchronize the `master` branch on your local machine. Switch back to the `master` branch and pull the changes.
 
-12. If you're deleting the copy of the new branch on Github, you probably want to delete our local copy too. So make sure your local Git is set to the master branch, pull the merged changes, and use the shell command.
+10. If we don't need our new branch anymore, we probably want to delete it. (We may already have done so on Github if the pull request was accepted.) To delete our local copy of the branch, we use the shell.
 
     ```
     $ git branch -d hye_github_collab
@@ -86,7 +76,7 @@ In the second workflow (fork and pull model), we don't have the ability to push 
 3. At this point, our local git only knows about the repository in our Github account. We probably also want to be able to retrieve changes to the original repository that we forked. 
 
     ```
-    $ git remote add upstream git://github.com/************
+    $ git remote add upstream git@github.com:************
     ```
 
     [From here on, the steps are similar to the shared repository model.]
@@ -119,18 +109,17 @@ In the second workflow (fork and pull model), we don't have the ability to push 
     $ git push --set-upstream origin hye_github_collab
     ```
 
-10. On Github, issue a "pull request" to merge your changes into the `master` branch of the *original* repository.
+10. On Github, issue a "pull request" to merge our changes into the `master` branch of the *original* repository.
 
-11. After this is done successfully, you should also have the option of deleting the new branch on Github. If you don't need it anymore, go ahead and delete!
-
-12. If you're deleting the copy of the new branch on Github, you probably want to delete our local copy too. So make sure your local Git is set to the master branch, pull the merged changes, and use the shell command.
-
-    ```
-    $ git branch -d hye_github_collab
-    ```
-13. Note that both the forked copy in our Github account and the clone on our local machine are separate Git repositories. Thus, to synchronize any changes to the original repository requires updating of both. After setting up the `upstream` remote, we can simply do the following in the shell. This will update the `master` branch on both our local machine and our Github account.
+11. After this is done, we will want to synchronize the changes to the `master` branch of the original repository to both our local machine and our Github account. After setting up the `upstream` remote, we can simply do the following in the shell. This will update the `master` branch on both our local machine and our Github account.
 
     ```
     $ git pull upstream master
     $ git push origin master
+    ```
+
+12. If we don't need our new branch anymore, we probably want to delete it. (We may already have done so on Github if the pull request was accepted.) To delete our local copy of the branch, we use the shell.
+
+    ```
+    $ git branch -d hye_github_collab
     ```
