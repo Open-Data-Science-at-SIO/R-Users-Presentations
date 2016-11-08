@@ -27,13 +27,17 @@ For a basic review of Git (the version control system) and Github (the code-host
 
 3. This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
 
-4. Once your changes are committed, you can go back to the `master` branch using the RStudio interface or the shell command.
+4. Once all your changes are committed, you will want to make sure that you can merge these changes with the `master` branch. We do this by going back to the `master` branch using the RStudio interface or the shell command.
 
 ```
     $ git checkout master
 ```
 
 5. Then make sure to pull the latest version of the `master` branch before attempting to merge your new changes.
+
+```
+    $ git pull
+```
 
 6. Now try to merge your changes. (The `--no-ff` option is to make sure all our individual branch commits are not collapsed into a single commit on the `master` branch.)
 
