@@ -27,7 +27,7 @@ For a basic review of Git (the version control system) and Github (the code-host
 
 3. This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
 
-4. Once your changes are committed, you can go back to the `master` branch using the RStudio interface or the shell command.
+4. Once all your changes are committed, you will want to make sure that you can merge these changes with the `master` branch. We do this by going back to the `master` branch using the RStudio interface or the shell command.
 
 ```
     $ git checkout master
@@ -35,17 +35,31 @@ For a basic review of Git (the version control system) and Github (the code-host
 
 5. Then make sure to pull the latest version of the `master` branch before attempting to merge your new changes.
 
-6. Now try to merge your changes. (The `--no-ff` option is to make sure all our individual branch commits are not collapsed into a single commit on the `master` branch.)
-
 ```
-    $ git merge --no-ff hye_github_collab
+    $ git pull
 ```
 
-7. Resolve any conflicts (probably none if you're only adding new files), and go back to 6. to try merging again.
+6. Now we want to make sure that our changes won't cause a conflict. We go back to our new branch from within RStudio or by using the shell command.
 
-8. Now push the changes back to Github.
+```
+    $ git checkout hye_github_collab
+```
 
-9. Delete your local copy of the new branch, since its work is now done!
+7. Next, we try to merge our changes. (I think this can only be done from the shell.)
+
+```
+    $ git merge master
+```
+
+8. Resolve any conflicts (probably none if you're only adding new files), and commit the latest version of our new branch.
+
+9. Now push the changes back to Github. This will create the new branch on Github with our fully-compatible additions.
+
+10. On Github, issue a "pull request" to merge your changes into the `master` branch.
+
+11. After this is done, you should also have the option of deleting the new branch on Github. If you don't need it anymore, go ahead and delete!
+
+12. (optional) If you're deleting the copy of the new branch on Github, you probably want to delete our local copy too. So make sure your local Git is set to the master branch, pull the merged changes, and use the shell command:
 
 ```
     $ git branch -d hye_github_collab
