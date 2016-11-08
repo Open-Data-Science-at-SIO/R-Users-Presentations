@@ -13,34 +13,38 @@ Basic Github Collaboration (shared repository model)
 
 1.  You want to start with an up-to-date local copy of the shared repository. If you don't currently have a local copy, you can create one using the `git clone` command. Otherwise, just pull the most recent changes.
 
-2.  Make a new branch for your changes. This allows you to make changes and commit them without worrying that you'll be causing a conflict with someone else's commits. Please choose a descriptive name for the new branch (maybe even including your username).
-
-\[Note that we are running these commands in the shell.\]
+2.  Make a new branch for your changes. This allows you to make changes and commit them without worrying that you'll be causing a conflict with someone else's commits. Please choose a descriptive name for the new branch (maybe even including your username). Note that we are running these commands in the shell.
 
         $ git checkout -b hye_github_collab
 
-1.  This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
+3.  This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
 
-2.  Once your changes are committed, you can go back to the `master` branch using the RStudio interface or the shell command.
-
-<!-- -->
+4.  Once all your changes are committed, you will want to make sure that you can merge these changes with the `master` branch. We do this by going back to the `master` branch using the RStudio interface or the shell command.
 
         $ git checkout master
 
-1.  Then make sure to pull the latest version of the `master` branch before attempting to merge your new changes.
+5.  Then make sure to pull the latest version of the `master` branch before attempting to merge your new changes.
 
-2.  Now try to merge your changes. (The `--no-ff` option is to make sure all our individual branch commits are not collapsed into a single commit on the `master` branch.)
+        $ git pull
 
-<!-- -->
+6.  Now we want to make sure that our changes won't cause a conflict. We go back to our new branch from within RStudio or by using the shell command.
 
-        $ git merge --no-ff hye_github_collab
+        $ git checkout hye_github_collab
 
-1.  Resolve any conflicts (probably none if you're only adding new files), and go back to 6. to try merging again.
+7.  Next, we try to merge our changes. (I think this can only be done from the shell.)
 
-2.  Now push the changes back to Github.
+        $ git merge master
 
-3.  Delete your local copy of the new branch, since its work is now done!
+8.  Resolve any conflicts (probably none if you're only adding new files), and commit the latest version of our new branch.
 
-<!-- -->
+9.  Now we want to push the changes back to Github. Because our new branch isn't yet on Github, we'll need to go into the shell once again to do this.
+
+        $ git push --set-upstream origin hye_github_collab
+
+10. On Github, issue a "pull request" to merge your changes into the `master` branch.
+
+11. After this is done, you should also have the option of deleting the new branch on Github. If you don't need it anymore, go ahead and delete!
+
+12. (optional) If you're deleting the copy of the new branch on Github, you probably want to delete our local copy too. So make sure your local Git is set to the master branch, pull the merged changes, and use the shell command.
 
         $ git branch -d hye_github_collab
