@@ -37,6 +37,8 @@ In the second workflow (fork and pull model), we don't have the ability to push 
 
 3. This should create the new branch and set our local Git repo to point to that branch. We can now make changes, and commit them to this new branch.
 
+***** I made this edit during R Users Group *****
+
 4. Once all your changes are committed, you will want to make sure that you can merge these changes with the `master` branch from the original repository. We do this by fetching the updates in the shell.
 
     ```
