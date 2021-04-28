@@ -1,0 +1,181 @@
+---
+title: "Introduction to the best fit straight line (bfsl) package"
+author: "Jooil Kim"
+date: "4/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+The York method (York 1966, 1968, 2004) can be useful when attempting to fit a straight line through points where errors can be defined (and should be considered) for both the x and y axis. Cantrell (2008) presents a review of various linear least-squares fitting methods, and concludes that the bivariate fitting method (York) is often the best choice. The references will be at the end.
+
+There are a few packages in R that allow the York method, but here I want to introduce the "bfsl" package, as I've found it to be the most straight forward implementation. I'll be installing from the git hub repository for this document to take advantage of some new features, but those capabilities might be available in the CRAN version by the time you follow this.
+
+
+```{r setting up the libraries}
+library(tidyverse)
+
+# Using development version of bfsl
+library(remotes)
+install_github("pasturm/bfsl")
+library(bfsl)
+library(broom)  # 
+```
+
+# Simple example
+
+Going through the example included in the bfsl package, comparing a York fit to an ordinary least squares fit.
+
+
+```{r bfsl example code}
+head(pearson_york_data)  # note that "weights" for the x and y (w_x, w_y) are given, and will be used in bfsl.
+
+fit = bfsl(pearson_york_data)
+print(fit)
+
+plot(fit)
+ols = bfsl(pearson_york_data, sd_x = 0, sd_y = 1)
+abline(coef = ols$coef[,1], lty = 2)
+legend("topright", c("ordinary least squares", "best-fit straight line"), lty = c(2,1))
+
+```
+
+
+Similar plot, but using ggplot2!
+
+```{r bfsl plotting with ggplot}
+df = as.data.frame(fit$data)
+head(df)
+ggplot(data = df, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = bfsl, method.args = list(sd_x = df$sd_x, sd_y = df$sd_y), se = TRUE) +
+  geom_errorbar(aes(ymin = y-sd_y, ymax = y+sd_y), width = 0.05) +
+  geom_errorbarh(aes(xmin = x-sd_x, xmax = x+sd_x), height = 0.05)
+
+```
+
+# Weights vs stdevs
+
+In many cases I want to use the stdev's available for the dataset as my weights. bfsl() will accept stdev's and convert them to weights internally if the stdev's are identified in the arguments "sd_x" and "sd_y". The internal conversion, according to bfsl() documentation, is:
+
+sd_x = 1/sqrt(w_x)
+
+sd_y = 1/sqrt(w_y)
+
+Just to prove the point:
+
+```{r bfsl fit with sd}
+pearson_york_data_withSD <- pearson_york_data %>%
+  mutate(sd_x = 1/sqrt(w_x)) %>%
+  mutate(sd_y = 1/sqrt(w_y)) %>%
+  select(!c(w_x, w_y))
+
+head(pearson_york_data_withSD)
+
+fit_sd <- bfsl(pearson_york_data_withSD)
+
+# Check the results
+fit_sd
+fit  # The previous fit based on weights, with identical results
+
+```
+
+# bfsl() in action!
+
+I've recently had to use bfsl() on a lot of different data sets, and here's my strategy for making things a little easier to manage, by wrapping bfsl() in a function, and combining multiple results into a data frame.
+
+```{r bfsl practical use code}
+# First, define a funciton around bfsl, where I can pass the data and a set of arguments, and get the bfsl() results back.
+f_bfsl <- function(.data, .args){
+  # create data with no NA's for the essential columns
+  .data_edit <- .data %>%
+    drop_na(.args$x, .args$y, .args$sd_x, .args$sd_y)
+  
+  bfsl(x = .data_edit[, .args$x], 
+       y = .data_edit[, .args$y], 
+       sd_x = .data_edit[, .args$sd_x], 
+       sd_y = .data_edit[, .args$sd_y])
+}
+
+args_fit1 <- list(x = "x", 
+                 y = "y", 
+                 sd_x = "sd_x", 
+                 sd_y = "sd_y")
+
+fit1 <- pearson_york_data_withSD %>%
+  f_bfsl(., args_fit1)
+
+# Let's just say we produced 3 different fits, and wanted a nice data.frame to see it togther...
+fit2 = fit1
+fit3 = fit1
+
+fit_df <- list(fit1, fit2, fit3) %>%
+  map_df(~{
+    data.frame(
+      spec = "",
+      slope_i = pluck(.x, "coefficients")["Slope", "Estimate"],
+      slope_err_i = pluck(.x, "coefficients")["Slope", "Std. Error"],
+      intercept_i = pluck(.x, "coefficients")["Intercept", "Estimate"],
+      intercept_err_i = pluck(.x, "coefficients")["Intercept", "Std. Error"],
+      chisq = pluck(.x, "chisq"),
+      n = pluck(.x, "data", "x") %>% length(.)
+    )
+  }) %>%
+  mutate(spec = c("fit1", "fit2", "fit3"))
+
+fit_df  
+
+
+
+
+
+```
+
+
+Finally, using the predict function to predict values on the fit!
+
+```{r}
+# x values that we would like to predict on fit1.
+test_data = c(x = c(4, 20)) 
+
+# Using the predict function
+predict(fit1, data.frame(x = test_data))   # note that we pass a data.frame with column names identical to one used when the fit was derived.
+
+# Just to show it gives the same answer...
+pluck(fit1, "coefficients")["Slope", "Estimate"]*test_data + pluck(fit1, "coefficients")["Intercept", "Estimate"]
+
+# some more paramters that predict() can generate
+predict(fit1, data.frame(x = test_data), interval = "confidence", se.fit = T) 
+
+
+# Tidyr ways to do the same thing.
+data.frame(x = test_data) %>%
+  mutate(fit = predict(fit1, data.frame(x = x), se.fit = T)$fit) %>%
+  mutate(fit_se = predict(fit1, data.frame(x = x), se.fit = T)$se.fit)
+
+data.frame(x = test_data) %>%
+  mutate(fit = predict(fit1, data.frame(x = x), interval = "confidence", se.fit = T)$fit[,"fit"]) %>%
+  mutate(fit_lwr = predict(fit1, data.frame(x = x), interval = "confidence", se.fit = T)$fit[,"lwr"]) %>%
+  mutate(fit_upr = predict(fit1, data.frame(x = x), interval = "confidence", se.fit = T)$fit[,"upr"]) %>%
+  mutate(fit_se = predict(fit1, data.frame(x = x), interval = "confidence", se.fit = T)$se.fit)
+```
+
+
+Also note that the author of the package is considering implementing “glance()” and “augment()” functions for the broom package, which should improve it's compatibility in tidyverse and thus enhance the package's utility.
+
+
+
+
+# References
+
+York, D. (1966). Least-squares fitting of a straight line. Canadian Journal of Physics, 44(5), 1079–1086, https://urldefense.com/v3/__https://doi.org/10.1139/p66-090__;!!Mih3wA!UGGIzzfAsUQA5samFAyX1UNBJD7PbDHyDTaz1eeuKOxsdIQRNul23H9gw6SYC78v$ 
+
+York, D. (1968). Least squares fitting of a straight line with correlated errors. Earth and Planetary Science Letters, 5, 320–324, https://urldefense.com/v3/__https://doi.org/10.1016/S0012-821X(68)80059-7__;!!Mih3wA!UGGIzzfAsUQA5samFAyX1UNBJD7PbDHyDTaz1eeuKOxsdIQRNul23H9gw39T0ZrB$ 
+
+York, D. et al. (2004). Unified equations for the slope, intercept, and standard errors of the best straight line, American Journal of Physics, 72, 367-375, https://urldefense.com/v3/__https://doi.org/10.1119/1.1632486__;!!Mih3wA!UGGIzzfAsUQA5samFAyX1UNBJD7PbDHyDTaz1eeuKOxsdIQRNul23H9gw7Q2Nbpb$ 
+
+Cantrell, C. A. (2008). Technical Note: Review of methods for linear least-squares fitting of data and application to atmospheric chemistry problems, Atmospheric Chemistry and Physics, 8, 5477-5487, https://urldefense.com/v3/__https://www.atmos-chem-phys.net/8/5477/2008/__;!!Mih3wA!UGGIzzfAsUQA5samFAyX1UNBJD7PbDHyDTaz1eeuKOxsdIQRNul23H9gwzAzGMNP$ 
